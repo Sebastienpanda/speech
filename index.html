@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconnaissance Vocale</title>
+</head>
+<body>
+<h1>Reconnaissance Vocale</h1>
+<button id="start-btn">Appuyez pour parler</button>
+<p id="result"></p>
+
+<script>
+    document.getElementById('start-btn').addEventListener('click', function() {
+
+        if (!('webkitSpeechRecognition' in window)) {
+            alert("Votre navigateur ne supporte pas la Web Speech API");
+            return;
+        }
+
+        const recognition = new webkitSpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+
+        const abbreviations = {
+            "augmentation": "aug",
+            "réduction": "réduc",
+            "diminution": "dim",
+            // Ajoute d'autres mots et abréviations ici
+        };
+
+        recognition.onstart = function() {
+            console.log('Reconnaissance vocale commencée');
+        };
+
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript.toLowerCase();
+            console.log('Résultat:', transcript);
+
+            let abbreviation = "Aucune abréviation trouvée";
+            for (let word in abbreviations) {
+                if (transcript.includes(word)) {
+                    abbreviation = abbreviations[word];
+                    break;
+                }
+            }
+
+            document.getElementById('result').innerText = `Abréviation : ${abbreviation}`;
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Erreur de reconnaissance vocale:', event.error);
+        };
+
+        recognition.start();
+    });
+</script>
+</body>
+</html>
